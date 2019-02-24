@@ -31,13 +31,13 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
 
     case SYSTEM_EVENT_STA_GOT_IP:
         xEventGroupSetBits(wifi_event_group, WIFI_CONNECTED_BIT);
-        printf_on_uart("GOT IP: %s\n", ip4addr_ntoa(&event->event_info.got_ip.ip_info.ip));
+        PRINTF_ON_UART("GOT IP: %s\n", ip4addr_ntoa(&event->event_info.got_ip.ip_info.ip));
         break;
 
     case SYSTEM_EVENT_STA_DISCONNECTED:
         /* This is a workaround as ESP32 WiFi libs don't currently
            auto-reassociate. */
-        printf_on_uart("WIFI DISCONNECTED... Trying to connect again\n");
+        PRINTF_ON_UART("WIFI DISCONNECTED... Trying to connect again\n");
         esp_wifi_connect();
         xEventGroupClearBits(wifi_event_group, WIFI_CONNECTED_BIT);
         break;
@@ -65,7 +65,7 @@ void initialise_wifi(void)
             .password = CONFIG_WIFI_PASSWORD,
         },
     };
-    printf_on_uart("Setting WiFi configuration SSID %s...\n", wifi_config.sta.ssid);
+    PRINTF_ON_UART("Setting WiFi configuration SSID %s...\n", wifi_config.sta.ssid);
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config));
     ESP_ERROR_CHECK(esp_wifi_start());

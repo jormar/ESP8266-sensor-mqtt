@@ -1,4 +1,4 @@
 
-void sendMessageToMqttTopic(const char* message, const char* topic, int retained, int qos);
-
 void initializeMqttTasks();
+
+int publishToMqttTopic(char* text, const char* topic, const int retained, const int qos);

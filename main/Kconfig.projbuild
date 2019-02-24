@@ -1,5 +1,9 @@
 menu "Custom Project Configuration"
 
+config ALLOW_PRINTF_ON_UART
+    bool "Enable/Disable printf function on UART0"
+    default false
+
 config WIFI_SSID
     string "WiFi SSID"
     default "WIFI_SSID"

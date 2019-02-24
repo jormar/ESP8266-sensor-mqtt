@@ -20,6 +20,7 @@
 #include "driver/adc.h"
 
 #include "esp_system.h"
+#include "esp_wifi.h"
 #include "nvs_flash.h"
 
 #include "../components/utils/uart.h"
@@ -32,7 +33,7 @@ TaskHandle_t sendDataOfSensorsTaskHandler = NULL;
 
 static void vSendDataOfSensorsTask(void *arg)
 {
-    static int lastValueSend = -1;
+    char message[3] = {0};
     int sensorValue;
     
     while (pdTRUE)
@@ -41,14 +42,9 @@ static void vSendDataOfSensorsTask(void *arg)
         if(ulTaskNotifyTake(pdTRUE, portMAX_DELAY))
         {
             sensorValue = gpio_get_level(GPIO_LIGHT_SENSOR);
-            if (lastValueSend != sensorValue) {
-                lastValueSend = sensorValue;
-                printf_on_uart("sendDataOfSensors - %d\n", sensorValue);
-
-                // TODO: Send status by MQTT
-            } else {
-                printf_on_uart("sendDataOfSensors (EQUAL)- %d\n", sensorValue);
-            }
+            sprintf(message, "%d", sensorValue);
+            publishToMqttTopic(message, CONFIG_MQTT_PUB_TOPIC, 1, CONFIG_DEFAULT_MQTT_PUB_QOS);
+            // esp_wifi_disconnect();
         }
     }
 }
@@ -62,7 +58,7 @@ static void vSensorTimerCallback(TimerHandle_t xTimer)
 
 static void vGpioSensorTask(void *arg)
 {
-    TimerHandle_t *xTimer = xTimerCreate("Sensor Timer", pdMS_TO_TICKS(1000), pdFALSE, ( void * ) 0, vSensorTimerCallback);
+    TimerHandle_t xTimer = xTimerCreate("SensorBufferTimer", pdMS_TO_TICKS(500), pdFALSE, ( void * ) 0, vSensorTimerCallback);
 
     while(pdTRUE)
     {
@@ -93,10 +89,14 @@ void app_main(void)
     initialise_wifi();
     initializeMqttTasks();
 
-    // printf_on_uart("SDK version:%s\n", esp_get_idf_version());
+    // PRINTF_ON_UART("SDK version:%s\n", esp_get_idf_version());
 
     xTaskCreate(vGpioSensorTask, "vGpioSensorTask", 4096, NULL, 1, &gpioSensorTaskHandler);
     xTaskCreate(vSendDataOfSensorsTask, "vSendDataOfSensorsTask", 4096, NULL, 1, &sendDataOfSensorsTaskHandler);
+
+    // Send current value every interval
+    TimerHandle_t xTimer = xTimerCreate("SensorIntervalTimer", pdMS_TO_TICKS(10000), pdTRUE, ( void * ) 0, vSensorTimerCallback);
+    xTimerStart(xTimer, 0);
 
     gpio_install_isr_service(0); //install gpio isr service
     gpio_isr_handler_add(GPIO_INPUT_IO_0, gpioSensorHandlerISR, NULL);
