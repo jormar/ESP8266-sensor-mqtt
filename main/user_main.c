@@ -58,7 +58,7 @@ static void vSensorTimerCallback(TimerHandle_t xTimer)
 
 static void vGpioSensorTask(void *arg)
 {
-    TimerHandle_t xTimer = xTimerCreate("SensorBufferTimer", pdMS_TO_TICKS(500), pdFALSE, ( void * ) 0, vSensorTimerCallback);
+    TimerHandle_t xTimer = xTimerCreate("SensorBufferTimer", pdMS_TO_TICKS(200), pdFALSE, ( void * ) 0, vSensorTimerCallback);
 
     while(pdTRUE)
     {

@@ -18,14 +18,14 @@
 
 void init_pins()
 {
-    gpio_set_intr_type(GPIO_OUTPUT_IO_0, GPIO_INTR_DISABLE);
-    gpio_set_direction(GPIO_OUTPUT_IO_0, GPIO_MODE_OUTPUT);
-    gpio_set_pull_mode(GPIO_INPUT_IO_0, GPIO_FLOATING);
-    // gpio_set_level(GPIO_OUTPUT_IO_0, 0);
+    gpio_set_intr_type(GPIO_LIGHT_SENSOR, GPIO_INTR_ANYEDGE);
+    gpio_set_direction(GPIO_LIGHT_SENSOR, GPIO_MODE_INPUT);
+    gpio_set_pull_mode(GPIO_LIGHT_SENSOR, GPIO_PULLDOWN_ONLY);
 
-    // gpio_set_intr_type(GPIO_INPUT_IO_0, GPIO_INTR_NEGEDGE);
-    gpio_set_intr_type(GPIO_INPUT_IO_0, GPIO_INTR_ANYEDGE);
-    gpio_set_direction(GPIO_INPUT_IO_0, GPIO_MODE_INPUT);
-    gpio_set_pull_mode(GPIO_INPUT_IO_0, GPIO_PULLUP_ONLY);
-    // gpio_set_pull_mode(GPIO_INPUT_IO_0, GPIO_PULLDOWN_ONLY);
+    // Trick ESP8266: We need to set some pin to out zero in order to use GPIO02 as input
+    // https://www.forward.com.au/pfod/ESP8266/GPIOpins/index.html
+    gpio_set_intr_type(_GPIO_LIGHT_SENSOR_OUT, GPIO_INTR_DISABLE);
+    gpio_set_direction(_GPIO_LIGHT_SENSOR_OUT, GPIO_MODE_OUTPUT);
+    gpio_set_pull_mode(_GPIO_LIGHT_SENSOR_OUT, GPIO_FLOATING);
+    gpio_set_level(_GPIO_LIGHT_SENSOR_OUT, 0);
 }

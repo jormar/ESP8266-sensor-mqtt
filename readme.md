@@ -22,7 +22,7 @@ $ make menuconfig
 
 You'll see now a `sdkconfig` file on your project root. It contains the definitions for many things (flash, ESP82266 states, etc), including the WIFI and MQTT definitions we're going to use to compile the project.
 
-Build and flash the project to ESP8266. Of course, be sure to have connected the chip in flash mode.
+Build and flash the project to ESP8266. Of course, be sure to have connected the chip in UART mode.
 
 ```bash
 # (Optional) Be sure you have the IDF_PATH env variable configured

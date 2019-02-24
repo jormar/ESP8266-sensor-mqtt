@@ -6,6 +6,7 @@
 #include "freertos/FreeRTOS.h"
 
 #include "driver/uart.h"
+#include "driver/gpio.h"
 
 #include "esp_system.h"
 
@@ -17,6 +18,7 @@
 
 void init_uart()
 {
+#ifdef CONFIG_ALLOW_PRINTF_ON_UART
     // Configure parameters of an UART driver,
     // communication pins and install the driver
     uart_config_t uart_config = {
@@ -28,6 +30,10 @@ void init_uart()
     };
     uart_param_config(UART_NUM_0, &uart_config);
     uart_driver_install(UART_NUM_0, BUF_SIZE * 2, 0, 0, NULL);
+#else
+    PIN_FUNC_SELECT(PERIPHS_GPIO_MUX_REG(GPIO_NUM_1), FUNC_GPIO1);
+    PIN_FUNC_SELECT(PERIPHS_GPIO_MUX_REG(GPIO_NUM_3), FUNC_GPIO3);
+#endif
 }
 
 void print_on_uart(const char *text)
